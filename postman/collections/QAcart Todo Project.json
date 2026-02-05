@@ -1,0 +1,293 @@
+{
+	"info": {
+		"_postman_id": "e2e8f5e8-79df-4f84-a0a4-9c6666762088",
+		"name": "QAcart Todo Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "47288510-e2e8f5e8-79df-4f84-a0a4-9c6666762088"
+	},
+	"item": [
+		{
+			"name": "Register  new user to database",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a3e4e962-e5c7-4529-817f-36e2adc301b4",
+						"exec": [
+							"pm.test(\"Register new user api status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Register api response -> First name should be correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							" ",
+							"    const access_token = jsonData.access_token; // Define access_token variable",
+							"    pm.environment.set(\"token\", access_token);",
+							"    var firstName = pm.environment.get(\"firstName\"); // Define firstName variable",
+							"    pm.expect(jsonData.firstName).to.eql(firstName); // Corrected property access",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f0692b59-16f5-4149-a0a3-1a9e47327733",
+						"exec": [
+							"const firstName = pm.variables.replaceIn('{{$randomFirstName}}')",
+							"",
+							"pm.environment.set(\"firstName\", firstName);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "824d2260-f74c-463c-9776-a3335471b59e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"Al-234567\",\n    \"firstName\": \"{{firstName}}\",\n    \"lastName\": \"{{$randomLastName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/users/register",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "20ec4c0c-5cd5-4130-9141-cd77acf4e35c",
+						"exec": [
+							"pm.test(\"Add todo api status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Add todo api -> todo name should be correct \", function () {",
+							"    var jsonData = pm.response.json();",
+							"    const taskId = jsonData._id; ",
+							"    pm.environment.set(\"taskID\", taskId);",
+							"    pm.expect(jsonData.item).to.eql(\"Learn Postman\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "a543bbd4-a30a-40da-a92c-6ff3009ab0a9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"item\": \"Learn Postman\",\n    \"isCompleted\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/tasks",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Mark todo as completed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b4d751ed-9bdd-44c7-a4f1-1e3158fffe7a",
+						"exec": [
+							"pm.test(\"Mark todo as completed api status should be 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Mark todo as completed api response should have isCompleted is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isCompleted).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "bde188e8-fae1-41b0-b6c4-83d0d4563c58",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"item\": \"Learn Postman\",\n    \"isCompleted\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}\t/api/v1/tasks/{{taskID}}",
+					"host": [
+						"{{baseURL}}\t"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"{{taskID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete todo task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fd5d3c76-f8f0-41b3-884d-cff9238042e2",
+						"exec": [
+							"pm.test(\"Delete todo api status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "347aa9d7-ec8e-4247-ad38-23127d21ec6a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/v1/tasks/{{taskID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"{{taskID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cean database using seed",
+			"id": "fec3ef7d-8741-4614-9b52-886ece18debd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/v1/seed",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"seed"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
